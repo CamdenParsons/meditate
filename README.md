@@ -1,14 +1,17 @@
 # meditate
 
-A focus timer for the terminal. It keeps track of what you actually got
-done in each session.
+A pomodoro-style timer you start from your terminal. It tracks your
+activity during the session.
 
-You start it when you sit down to work. It counts down. Every so often it
-plays a gong so you notice the time. When the session ends it writes one
-line to a plain text file: how long you sat, how much of that time you
-were at the keyboard, and what came out of it.
+It counts down and plays a gong at intervals. When the session ends it
+writes one line to a plain text file: how long you sat, how much of that
+time you were at the keyboard, and what came out of it.
 
-That file is easy to read back later, either by you or by whatever program
+The sound is a zen gong. I use it the way tingsha are used in Buddhist
+meditation, to mark the intervals and bring my attention back to the
+session.
+
+The file is easy to read back later, either by you or by whatever program
 you point at it.
 
 ```
@@ -82,25 +85,24 @@ The next section explains how it changed.
 
 ## Where it came from
 
-It started as a meditation timer. I wanted a real gong for sitting at my
-desk, and nothing else.
+It started as a meditation timer. The activity tracking was there to
+motivate me. During a sit the goal is to take as few actions as possible,
+and watching that draw itself as a line made it much easier to hold myself
+to it.
 
-The tracking came second, for an unflattering reason. I wanted to know
-whether I was cheating. It is easy to sit down for twenty minutes and
-spend six of them answering a message. So it started checking, once a
-second, whether I had touched the keyboard, and drawing the result as a
-line.
+Then I repurposed it for pomodoro focus time at work. The shape is the
+same. You sit down, do one thing, and stop when the bell rings. It
+replaced my pomodoro timer.
 
-Then I noticed I was starting it before work too. The shape is the same:
-sit down, do one thing, stop when the bell rings. It replaced my pomodoro
-timer. I am aware that building your own focus timer is itself a way of
-avoiding work.
+I kept the gong, because measuring the intervals by ear turned out to be
+just as useful at work as in a sit. It tells me where I am in the session
+without looking, and pulls my attention back to it.
 
-The cheating check turned out to be the more useful part. The same line
-that catches you fidgeting through a meditation shows, over weeks, how
-productive you were and how steady your flow is. Once every focused block
-was going through it, the next question was what those blocks produced, so
-it started recording that too.
+Tracking activity turned out to be the more useful half. The same line
+that shows whether I stayed still during a meditation shows, over weeks,
+how much of my focus time was real and how steady it is. Once every
+focused block was going through it, the next question was what those
+blocks produced, so it started recording that too.
 
 It works alongside an agent skill I run, which keeps my issue tracker up
 to date while I work instead of at the end of the day. The two halves fit
@@ -109,9 +111,9 @@ actually doing it, and for how long. The log is one JSON object per line
 so that a program can read it as easily as I can.
 
 That history is why there is one kind of session and no work or meditation
-setting, and why the app shows your stillness but never judges it. In a
-meditation, input means you were distracted. In deep work, it means you
-were engaged. The same number means opposite things, and only you know
+setting, and why the app shows your activity but never judges it. In a
+meditation, activity means you were distracted. In focus time, it means
+you were working. The same number means opposite things, and only you know
 which one you sat down for.
 
 ## Quick start
