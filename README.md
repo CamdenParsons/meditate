@@ -8,8 +8,14 @@ ends it records how long you sat, how still you were, and what you actually
 did — the Claude Code sessions, commits, pull requests and Linear issues
 from that window.
 
-Timers are everywhere; a timer that writes down what the block produced is
-not. That record is the point.
+A timer measures the container, never the contents. At the end of a week I
+could see a column of finished pomodoros and still not honestly say what
+any of them produced. This one records both.
+
+It samples once a second whether you touched the keyboard or trackpad —
+never *which* keys. That distinction is the whole design: `HIDIdleTime`
+reports only how long since the last input, so there is nothing to capture
+and no permission to grant.
 
 ```
                        \\       |             |       //
@@ -69,10 +75,15 @@ standard library, no dependencies, no install step.
 
 ## Where it came from
 
-It started as a meditation timer. I wanted a gong for desk meditation and
-nothing else. Then I noticed I was starting it for work too, because the
-shape is identical: sit down, do one thing, resurface when the bell rings.
-It replaced my pomodoro timer.
+It started as a meditation timer. I wanted a real gong for desk meditation
+and nothing else — every app I tried had a tinny bell and wanted an
+account.
+
+Then I noticed I was starting it before work too, because the shape is
+identical: sit down, do one thing, resurface when the bell rings. It
+replaced my pomodoro timer, which is a sentence I would have found
+insufferable a year ago. Building your own focus tool is arguably the
+finest procrastination available, and I make no defence of that.
 
 Once every focused block was going through it, the obvious question was
 what those blocks had actually produced — so it started writing that down.
