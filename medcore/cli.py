@@ -9,8 +9,8 @@ import tty
 from datetime import datetime, timedelta
 
 from . import activity, audio, config, store
-from .display import (CLEAR, DIM, GOLD, GREY, HIDE, HOME, RESET, SHOW,
-                      farewell, hhmm, mmss, progress_detail, screen,
+from .display import (CLEAR, DIM, GOLD, GREY, HIDE, HOME, RESET, SHOW, WHITE,
+                      farewell, hhmm, mmss, progress_detail, rollup, screen,
                       sparkline)
 from .presence import percent, read_summary
 from .session import EXPIRE, INTERVAL, Session
@@ -100,21 +100,20 @@ def _log(limit):
         return
     print()
     by_day = {}
-    for r in rows[-limit:]:
+    shown = rows[-limit:]
+    for i, r in enumerate(shown):
+        if i:
+            print()          # entries can run to two lines, so separate them
         when = datetime.fromisoformat(r["started"])
         s = read_summary(r)
         mark = {"expired": "~", "you": " ", "duration": " "}.get(r.get("ended_by"), " ")
         line = f"  {when:%Y-%m-%d %H:%M}  {mark}{mmss(r['seconds']):>8}"
         if s:
             line += f"  {GREY}{sparkline(s['buckets'])}{RESET} {percent(s):3.0f}%"
-        prog = r.get("progress") or {}
-        if prog.get("tickets"):
-            line += f"  {GOLD}{' '.join(prog['tickets'])}{RESET}"
-        # the busiest claude session names the sitting well enough to skim
-        titles = [c.get("title") for c in prog.get("claude", []) if c.get("title")]
-        if titles:
-            line += f"  {DIM}{titles[0][:38]}{RESET}"
         print(line)
+        summary = rollup(r.get("progress"))
+        if summary:
+            print(f"  {' ' * 19}{WHITE}{summary}{RESET}")
         by_day.setdefault(when.date(), 0)
         by_day[when.date()] += r["seconds"]
     total = sum(r["seconds"] for r in rows)

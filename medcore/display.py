@@ -151,34 +151,52 @@ def screen(session, width, height=None):
     return CLEAR + HOME + "\n" * top + "\n".join(body)
 
 
-def progress_summary(prog):
-    """One line: the shape of what you did."""
+def rollup(prog):
+    """One readable line of counts, for the session list.
+
+    Detail belongs in `meditate show`; this only has to say what kinds of
+    work a session touched, and how much.
+    """
     if not prog:
         return ""
+    parts = []
+
+    n = len(prog.get("claude", []))
+    if n:
+        parts.append(f"claude ({n} session{_s(n)})")
+
+    n = len(prog.get("linear", []))
+    if n:
+        parts.append(f"linear ({n} issue{_s(n)})")
+
     gh = prog.get("github", {})
     bits = []
-    if prog.get("claude"):
-        bits.append(f"{len(prog['claude'])} claude")
-    if prog.get("commits"):
-        bits.append(f"{len(prog['commits'])} commits")
-    if gh.get("pushes"):
-        bits.append(f"{len(gh['pushes'])} pushes")
-    if gh.get("prs"):
-        bits.append(f"{len(gh['prs'])} PRs")
-    if gh.get("reviews"):
-        bits.append(f"{len(gh['reviews'])} reviews")
-    if gh.get("issues"):
-        bits.append(f"{len(gh['issues'])} comments")
-    if prog.get("linear"):
-        bits.append(f"{len(prog['linear'])} issues")
-    if prog.get("tickets"):
-        bits.append(" ".join(prog["tickets"]))
-    return "  ".join(bits)
+    for key, one, many in (("prs", "PR", "PRs"),
+                           ("reviews", "review", "reviews"),
+                           ("issues", "comment", "comments"),
+                           ("pushes", "push", "pushes"),
+                           ("branches", "branch", "branches")):
+        k = len(gh.get(key, []))
+        if k:
+            bits.append(f"{k} {one if k == 1 else many}")
+    if bits:
+        parts.append(f"github ({', '.join(bits)})")
+
+    n = len(prog.get("commits", []))
+    if n:
+        parts.append(f"{n} commit{_s(n)}")
+
+    # ids are short and identify the work, so show them until there are
+    # too many to read at a glance
+    tix = [t for t in prog.get("tickets", [])]
+    if tix:
+        parts.append(" ".join(tix) if len(tix) <= 3 else f"{len(tix)} tickets")
+
+    return "  ".join(parts)
 
 
-def short_path(p):
-    home = str(Path.home())
-    return p.replace(home, "~", 1) if p and p.startswith(home) else (p or "")
+def _s(n):
+    return "" if n == 1 else "s"
 
 
 def progress_detail(prog):
@@ -229,7 +247,7 @@ def farewell(row, ended_by):
     lines = [f"\n  {GOLD}{why}{RESET}  {mmss(row['seconds'])}, {row['gongs']} gongs."]
     if s:
         lines += [f"\n  {GREY}{sparkline(s['buckets'])}{RESET}", f"  {describe(s)}"]
-    summary = progress_summary(row.get("progress"))
+    summary = rollup(row.get("progress"))
     if summary:
         lines.append(f"  {summary}")
     return "\n".join(lines) + "\n"

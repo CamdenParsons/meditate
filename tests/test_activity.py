@@ -198,5 +198,44 @@ class LinearProvider(unittest.TestCase):
         self.assertEqual(Tickets().collect(WINDOW, found), ["ACME-999"])
 
 
+class Rollup(unittest.TestCase):
+    """The session list shows counts; `show` shows the records."""
+
+    def _r(self, prog):
+        from medcore.display import rollup
+        return rollup(prog)
+
+    def test_nothing_found_is_an_empty_line(self):
+        self.assertEqual(self._r({}), "")
+        self.assertEqual(self._r(None), "")
+
+    def test_counts_each_kind_of_work(self):
+        got = self._r({
+            "claude": [{}, {}, {}],
+            "linear": [{"id": "ACME-1"}, {"id": "ACME-2"}],
+            "github": {"prs": [{}], "branches": [{}, {}, {}]},
+            "commits": [{}, {}],
+        })
+        self.assertIn("claude (3 sessions)", got)
+        self.assertIn("linear (2 issues)", got)
+        self.assertIn("github (1 PR, 3 branches)", got)
+        self.assertIn("2 commits", got)
+
+    def test_singular_reads_correctly(self):
+        got = self._r({"claude": [{}], "commits": [{}],
+                       "github": {"branches": [{}], "prs": [{}]}})
+        self.assertIn("claude (1 session)", got)
+        self.assertIn("1 commit", got)
+        self.assertIn("github (1 PR, 1 branch)", got)
+
+    def test_a_few_ticket_ids_are_shown_but_many_are_counted(self):
+        self.assertIn("ACME-1 ACME-2", self._r({"tickets": ["ACME-1", "ACME-2"]}))
+        self.assertIn("5 tickets",
+                      self._r({"tickets": [f"ACME-{i}" for i in range(5)]}))
+
+    def test_empty_provider_results_are_left_out(self):
+        self.assertEqual(self._r({"claude": [], "github": {}, "commits": []}), "")
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
