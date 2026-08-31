@@ -211,10 +211,11 @@ in the Linear UI touches no branch, no commit and no pull request, so the
 Only Linear knows.
 
 Create a personal API key in Linear under **Settings > Security & access >
-Personal API keys**, then:
+Personal API keys**, then put it in a `.env`:
 
 ```
-export LINEAR_API_KEY=lin_api_...
+cp .env.example ~/.meditate/.env
+$EDITOR ~/.meditate/.env          # LINEAR_API_KEY=lin_api_...
 ```
 
 Without it the provider returns nothing and everything else carries on.
@@ -244,8 +245,13 @@ because the latter reports zero for private repositories
 are read out of branch names and PR titles rather than fetched, so no API
 key is needed ([ADR 0005](docs/adr/0005-tickets-are-scraped-not-fetched.md)).
 
+Settings come from `~/.meditate/.env`, or a `.env` beside the script — see
+[`.env.example`](.env.example). Anything already set in your shell wins, so
+`MEDITATE_DEBUG=1 meditate 20` works without editing the file.
+
 | variable            | effect                                            |
 |---------------------|---------------------------------------------------|
+| `LINEAR_API_KEY`    | enables the `linear` provider                     |
 | `MEDITATE_ACTIVITY` | comma-separated provider names; the rest are skipped |
 | `MEDITATE_REPOS`    | extra repositories for the `commits` provider     |
 | `MEDITATE_DEBUG`    | print provider failures instead of swallowing them |
@@ -296,6 +302,7 @@ meditate          entry point
 medcore/
   session.py      a Session: when it ends, what it records
   activity/       what you did: one module per source
+  config.py       settings, read from .env
   presence.py     per-second presence, and its summary
   inputwatch.py   how long since the human last touched the machine
   audio.py        striking the gong

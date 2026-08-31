@@ -8,7 +8,7 @@ import time
 import tty
 from datetime import datetime, timedelta
 
-from . import activity, audio, store
+from . import activity, audio, config, store
 from .display import (CLEAR, DIM, GOLD, GREY, HIDE, HOME, RESET, SHOW,
                       farewell, hhmm, mmss, progress_detail, screen,
                       sparkline)
@@ -139,6 +139,7 @@ def main(argv=None):
                    help="skip the end-of-session look at what you did")
     p.add_argument("-h", "--help", action="store_true")
     a = p.parse_args(argv)
+    config.load()
 
     if a.help:
         print(USAGE)
