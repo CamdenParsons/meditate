@@ -72,26 +72,40 @@ standard library, no dependencies, no install step.
 ```
 git clone https://github.com/CamdenParsons/meditate
 cd meditate
-./meditate 20 -i 5      # 20 minutes, gong every 5
+./meditate 20 -i 5                              # 20 minutes, gong every 5
+ln -s "$PWD/meditate" /usr/local/bin/meditate   # optional, run it anywhere
 ```
 
-```
-./meditate            start a session, gong every 30 min
-./meditate 20         a 20 minute session
-./meditate -i 5       gong every 5 min
-./meditate -e 30      expire after 30 min with no input
-./meditate log        past sessions
-./meditate bell       ring the gong once
-```
-
-`space` pauses, `q` ends. Start one from a background terminal when you
-sit down and forget about it.
-
-To run it from anywhere:
+## Commands
 
 ```
-ln -s "$PWD/meditate" /usr/local/bin/meditate
+meditate            start a session, gong every 30 min
+meditate 20         a 20 minute session
+meditate -i 5       gong every 5 min
+meditate -e 30      expire after 30 min with no input
+meditate log        past sessions
+meditate show       what you did in the last one (-n 2 for the one before)
+meditate bell       ring the gong once
 ```
+
+`space` pauses, `q` ends. Start one in a background terminal when you sit
+down and forget about it.
+
+## Where it came from
+
+It started as a meditation timer. I wanted a gong for desk meditation and
+nothing else. Then I noticed I was starting it for work too, because the
+shape is identical: sit down, do one thing, resurface when the bell rings.
+It replaced my pomodoro timer.
+
+Once every focused block was going through it, the obvious question was
+what those blocks had actually produced — so it started writing that down.
+Now it is how I track my work habits over time.
+
+That history is why there is one kind of session and no work/meditation
+flag, and why the app reports your stillness but never judges it. During a
+sit, input means distraction. During deep work, it means engagement. Same
+number, opposite meanings, and only you know which you sat down for.
 
 ## How a session ends
 
