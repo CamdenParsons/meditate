@@ -1,7 +1,8 @@
 # meditate
 
-A pomodoro-style timer you start from your terminal. It tracks your
-activity during the session.
+A pomodoro-style timer you start from your terminal, for managing focused
+sessions at your desk. Use it to track a personal meditation session, or
+your flow and productivity at work.
 
 It counts down and plays a gong at intervals. When the session ends it
 writes one line to a plain text file: how long you sat, how much of that
