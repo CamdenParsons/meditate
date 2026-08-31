@@ -203,7 +203,7 @@ class Rollup(unittest.TestCase):
 
     def _r(self, prog):
         from medcore.display import rollup
-        return rollup(prog)
+        return rollup(prog, colour=False)
 
     def test_nothing_found_is_an_empty_line(self):
         self.assertEqual(self._r({}), "")

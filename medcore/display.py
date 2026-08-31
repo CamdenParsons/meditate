@@ -4,9 +4,30 @@ from pathlib import Path
 
 ART_DIR = Path(__file__).resolve().parent.parent / "art"
 
-ART = "\033[38;5;137m"      # muted gold - present, but behind the clock
-DIM, GOLD, WHITE, GREY, RESET = (
-    "\033[2m", "\033[38;5;179m", "\033[38;5;255m", "\033[38;5;244m", "\033[0m")
+def _c(n):
+    return f"\033[38;5;{n}m"
+
+
+# A warm palette, because the thing it is imitating is a struck bell.
+# Colour marks category and intensity, never quality: the app does not
+# know whether your session was good.
+RESET, DIM = "\033[0m", "\033[2m"
+FIGURE = _c(137)     # the Buddha, sitting behind everything
+RAYS = _c(94)        # the halo, dimmer than the figure
+GOLD = _c(179)       # the clock
+BRIGHT = _c(222)     # the struck note: bar, live numbers
+WHITE = _c(253)
+GREY = _c(244)
+FAINT = _c(238)
+TEAL = _c(73)        # status
+MAUVE = _c(176)      # claude
+BLUE = _c(110)       # linear
+GREEN = _c(108)      # commits
+ART = FIGURE
+
+# the sparkline runs cold to warm with the amount of input
+LADDER = [_c(238), _c(94), _c(136), _c(137), _c(179), _c(179), _c(214),
+          _c(214), _c(222)]
 HIDE, SHOW, CLEAR, HOME = "\033[?25l", "\033[?25h", "\033[2J", "\033[H"
 BARS = " ▁▂▃▄▅▆▇█"
 
@@ -41,9 +62,20 @@ def hhmm(seconds):
     return f"{h}h {m:02d}m" if h else f"{m}m"
 
 
-def sparkline(buckets):
-    """Render a stored bucket string ('0'-'8' per column) as bars."""
-    return "".join(BARS[min(8, int(c))] if c.isdigit() else " " for c in buckets or "")
+def sparkline(buckets, colour=True):
+    """Render a stored bucket string ('0'-'8' per column) as bars.
+
+    Coloured cold to warm by how much input each column held, so the shape
+    of a session is legible before you read either number.
+    """
+    out = []
+    for c in buckets or "":
+        if not c.isdigit():
+            out.append(" ")
+            continue
+        n = min(8, int(c))
+        out.append(f"{LADDER[n]}{BARS[n]}{RESET}" if colour else BARS[n])
+    return "".join(out)
 
 
 _art_cache = None
@@ -128,8 +160,8 @@ def screen(session, width, height=None):
     if done is not None:
         bar_w = max(20, min(46, width - 12))
         filled = int(round(done * bar_w))
-        bar = "─" * filled + GREY + "─" * (bar_w - filled) + RESET
-        body.append(" " * max(0, (width - bar_w) // 2) + GOLD + bar)
+        bar = (BRIGHT + "━" * filled + FAINT + "━" * (bar_w - filled) + RESET)
+        body.append(" " * max(0, (width - bar_w) // 2) + bar)
         body.append("")
 
     if session.paused:
@@ -138,7 +170,7 @@ def screen(session, width, height=None):
         status = "no gong"
     else:
         status = f"next gong in {mmss(session.next_gong)}"
-    body.append(WHITE + status.center(width).rstrip() + RESET)
+    body.append(TEAL + status.center(width).rstrip() + RESET)
 
     if len(session.presence):
         still = f"still for {mmss(session.presence.still_for)}"
@@ -151,7 +183,7 @@ def screen(session, width, height=None):
     return CLEAR + HOME + "\n" * top + "\n".join(body)
 
 
-def rollup(prog):
+def rollup(prog, colour=True):
     """One readable line of counts, for the session list.
 
     Detail belongs in `meditate show`; this only has to say what kinds of
@@ -159,15 +191,16 @@ def rollup(prog):
     """
     if not prog:
         return ""
+    C = (lambda code: code) if colour else (lambda code: "")
     parts = []
 
     n = len(prog.get("claude", []))
     if n:
-        parts.append(f"claude ({n} session{_s(n)})")
+        parts.append(f"{C(MAUVE)}claude{C(RESET)} ({n} session{_s(n)})")
 
     n = len(prog.get("linear", []))
     if n:
-        parts.append(f"linear ({n} issue{_s(n)})")
+        parts.append(f"{C(BLUE)}linear{C(RESET)} ({n} issue{_s(n)})")
 
     gh = prog.get("github", {})
     bits = []
@@ -180,17 +213,18 @@ def rollup(prog):
         if k:
             bits.append(f"{k} {one if k == 1 else many}")
     if bits:
-        parts.append(f"github ({', '.join(bits)})")
+        parts.append(f"{C(WHITE)}github{C(RESET)} ({', '.join(bits)})")
 
     n = len(prog.get("commits", []))
     if n:
-        parts.append(f"{n} commit{_s(n)}")
+        parts.append(f"{C(GREEN)}{n} commit{_s(n)}{C(RESET)}")
 
     # ids are short and identify the work, so show them until there are
     # too many to read at a glance
     tix = [t for t in prog.get("tickets", [])]
     if tix:
-        parts.append(" ".join(tix) if len(tix) <= 3 else f"{len(tix)} tickets")
+        shown = " ".join(tix) if len(tix) <= 3 else f"{len(tix)} tickets"
+        parts.append(f"{C(GOLD)}{shown}{C(RESET)}")
 
     return "  ".join(parts)
 
