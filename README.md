@@ -1,14 +1,15 @@
 # meditate
 
-A focus timer for the terminal that records what each session actually
-produced.
+A focus timer for the terminal. It keeps track of what you actually got
+done in each session.
 
-You start it when you sit down to work. It counts down, and at intervals
-it strikes a gong — a real recorded one rather than a notification chime,
-because a chime is easy to tune out and forty seconds of decaying bronze
-is not. When the session ends it writes a single line to a log: how long
-you sat, how much of that time you were at the keyboard, and what came
-out of it.
+You start it when you sit down to work. It counts down. Every so often it
+plays a gong so you notice the time. When the session ends it writes one
+line to a plain text file: how long you sat, how much of that time you
+were at the keyboard, and what came out of it.
+
+That file is easy to read back later, either by you or by whatever program
+you point at it.
 
 ```
                        \\       |             |       //
@@ -48,18 +49,17 @@ out of it.
                            [space] pause   [q] end
 ```
 
-A timer measures the container, never the contents. It will tell you that
-you sat for twenty-five minutes and has no idea whether you were there for
-any of it. This one measures both ends.
+Most timers only measure the time. They cannot tell whether you were
+actually there. This one measures both.
 
-For the first, it samples once a second whether the keyboard or trackpad
-was touched — never *which* keys. `HIDIdleTime` reports only how long
-since the last input, so there is nothing to capture and no permission to
-grant.
+For the first part, it checks once a second whether you touched the
+keyboard or trackpad. It never records which keys. macOS only tells it how
+long since the last input, so there is nothing to capture and no
+permission to ask for.
 
-For the second, when a session closes it asks your tools what they
-recorded in that window: git commits, pull requests, and — if you use them
-— Claude Code sessions and Linear issues.
+For the second part, when a session ends it asks your tools what they
+recorded during it: git commits, pull requests, and if you use them,
+Claude Code sessions and Linear issues.
 
 ```
 $ meditate log
@@ -69,51 +69,50 @@ $ meditate log
   2 sessions over 1 day, 3:00:00 total.
 ```
 
-Bars are the session's shape, the percentage is how much of it had input.
-The `~` marks one you walked away from: it expired, and is recorded as
-ending at your last input rather than hours later.
+The bars show the shape of the session. The percentage is how much of it
+had input. A `~` means you walked away and it expired, so it was recorded
+as ending at your last keystroke instead of hours later.
 
-**macOS only.** Sound goes through `afplay`, and the input sampling reads
-`HIDIdleTime` from `ioreg`. Nothing else is needed: Python 3 standard
+**macOS only.** Sound goes through `afplay`, and the input check reads
+`HIDIdleTime` from `ioreg`. Nothing else is needed. Python 3 standard
 library, no dependencies, no install step.
 
-It is called *meditate* because that is what it was built for first. The
-next section explains how a meditation timer turned into this.
+The app is called *meditate* because that is what it was built for first.
+The next section explains how it changed.
 
 ## Where it came from
 
-It started as a meditation timer. I wanted a real gong for desk sessions
-and nothing else.
+It started as a meditation timer. I wanted a real gong for sitting at my
+desk, and nothing else.
 
-The tracking came second, for an unflattering reason: I wanted to know
+The tracking came second, for an unflattering reason. I wanted to know
 whether I was cheating. It is easy to sit down for twenty minutes and
-spend six of them answering a message. So it began sampling, once a
-second, whether the keyboard or trackpad had been touched, and drawing the
-result as a line I could not argue with.
+spend six of them answering a message. So it started checking, once a
+second, whether I had touched the keyboard, and drawing the result as a
+line.
 
-Then I noticed I was starting it before work too — the shape is identical:
-sit down, do one thing, resurface when the bell rings. It replaced my
-pomodoro timer, which is a sentence I would have found insufferable a year
-ago; building your own focus tool is arguably the finest procrastination
-available, and I offer no defence.
+Then I noticed I was starting it before work too. The shape is the same:
+sit down, do one thing, stop when the bell rings. It replaced my pomodoro
+timer. I am aware that building your own focus timer is itself a way of
+avoiding work.
 
-The cheating detector turned out to be the more interesting half. The same
-measurement that catches you fidgeting through a sit shows, across weeks,
-how productive you actually were and how steady the flow was. Once every
-focused block was running through it, the obvious next question was what
-those blocks produced — so it started writing that down too.
+The cheating check turned out to be the more useful part. The same line
+that catches you fidgeting through a meditation shows, over weeks, how
+productive you were and how steady your flow is. Once every focused block
+was going through it, the next question was what those blocks produced, so
+it started recording that too.
 
-It pairs with an agent skill I run alongside it, which keeps my issue
-tracker updated as I work rather than in a scramble at the end of the day.
-The two halves close a loop: the skill records what the work *was*, and
-this records when I was actually at it, and for how long. The session log
-is one JSON object per line for exactly that reason — it is meant to be
-read by an agent as much as by me.
+It works alongside an agent skill I run, which keeps my issue tracker up
+to date while I work instead of at the end of the day. The two halves fit
+together. The skill records what the work was. This records when I was
+actually doing it, and for how long. The log is one JSON object per line
+so that a program can read it as easily as I can.
 
-That history is why there is one kind of session and no work/meditation
-flag, and why the app reports your stillness but never judges it. During a
-sit, input is distraction. During deep work, it is engagement. One
-measurement, opposite meanings, and only you know which you sat down for.
+That history is why there is one kind of session and no work or meditation
+setting, and why the app shows your stillness but never judges it. In a
+meditation, input means you were distracted. In deep work, it means you
+were engaged. The same number means opposite things, and only you know
+which one you sat down for.
 
 ## Quick start
 
@@ -148,13 +147,14 @@ down and forget about it.
 | `expired`  | you stopped touching the machine for the expiry    |
 
 An expired session is recorded as ending at your **last input**, not when
-the expiry fired — otherwise walking off at 10am and noticing at 6pm
-would log eight hours. See [ADR 0003](docs/adr/0003-expiry-ends-at-last-input.md).
+the expiry fired. Otherwise walking off at 10am and noticing at 6pm would
+log eight hours. See [ADR 0003](docs/adr/0003-expiry-ends-at-last-input.md).
 
 ## What gets recorded
 
-Once a second: whether there was input, and when. Never which keys — which
-is why it needs no permission and captures no content
+Once a second it records whether there was input, and when. It never
+records which keys. That is why it needs no permission and captures no
+content
 ([ADR 0001](docs/adr/0001-presence-is-timing-only.md)).
 
 The app will not tell you whether your stillness was good. That depends on
@@ -234,7 +234,8 @@ Usually that is exactly the work you sat down to do. It is not always:
 - a Claude session already running when you sat down contributes only its
   messages inside the window, and is labelled `(continued)`
 
-It records what happened while you sat, not what the sitting caused.
+So it tells you what happened while you sat, which is not always the same
+as what the sitting caused.
 
 The Claude transcripts carry a `cwd`, so the sessions you had also say
 which repositories to search for commits - no configuration.
@@ -245,21 +246,21 @@ because the latter reports zero for private repositories
 are read out of branch names and PR titles rather than fetched, so no API
 key is needed ([ADR 0005](docs/adr/0005-tickets-are-scraped-not-fetched.md)).
 
-Settings come from `~/.meditate/.env`, or a `.env` beside the script — see
+Settings come from `~/.meditate/.env`, or a `.env` beside the script. See
 [`.env.example`](.env.example). Anything already set in your shell wins, so
 `MEDITATE_DEBUG=1 meditate 20` works without editing the file.
 
 | variable            | effect                                            |
 |---------------------|---------------------------------------------------|
 | `LINEAR_API_KEY`    | enables the `linear` provider                     |
-| `MEDITATE_ACTIVITY` | comma-separated provider names; the rest are skipped |
+| `MEDITATE_ACTIVITY` | comma-separated provider names, the rest are skipped |
 | `MEDITATE_REPOS`    | extra repositories for the `commits` provider     |
 | `MEDITATE_DEBUG`    | print provider failures instead of swallowing them |
 | `--no-progress`     | skip the lookup for one session                   |
 
 Providers are silent on failure so a broken one cannot fail a Session.
 That silence once hid a real bug for a release, which is why
-`MEDITATE_DEBUG` exists — reach for it first when a provider returns
+`MEDITATE_DEBUG` exists. Reach for it first when a provider returns
 nothing you expected.
 
 Adding a source means adding a module with a `name` and a
@@ -287,7 +288,7 @@ Both files derive from a single CC0 recording.
 A haloed seated Buddha sits above the clock. The figure is by **hjw**
 (Hayley Jane Wakenshaw), from https://asciiart.website/art/3832. The
 original's ground line and `hjw` signature have been trimmed so the
-figure floats inside its halo; credit stays here and in `art/README.md`.
+figure floats inside its halo. Credit stays here and in `art/README.md`.
 The halo is generated by `scripts/make_rays.py`, a build-time script that
 writes `art/buddha.txt` from `art/figure.txt`. Re-run it to retune.
 
