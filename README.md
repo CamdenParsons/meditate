@@ -8,9 +8,9 @@ ends it records how long you sat, how still you were, and what you actually
 did — the Claude Code sessions, commits, pull requests and Linear issues
 from that window.
 
-A timer measures the container, never the contents. At the end of a week I
-could see a column of finished pomodoros and still not honestly say what
-any of them produced. This one records both.
+A timer measures the container, never the contents. It will tell you that
+you sat for twenty-five minutes and has no idea whether you were there for
+any of it. This one records both.
 
 It samples once a second whether you touched the keyboard or trackpad —
 never *which* keys. That distinction is the whole design: `HIDIdleTime`
@@ -75,19 +75,26 @@ standard library, no dependencies, no install step.
 
 ## Where it came from
 
-It started as a meditation timer. I wanted a real gong for desk meditation
-and nothing else — every app I tried had a tinny bell and wanted an
-account.
+It started as a meditation timer. I wanted a real gong for desk sessions
+and nothing else.
 
-Then I noticed I was starting it before work too, because the shape is
-identical: sit down, do one thing, resurface when the bell rings. It
-replaced my pomodoro timer, which is a sentence I would have found
-insufferable a year ago. Building your own focus tool is arguably the
-finest procrastination available, and I make no defence of that.
+The tracking came second, for an unflattering reason: I wanted to know
+whether I was cheating. It is easy to sit down for twenty minutes and
+spend six of them answering a message. So it began sampling, once a
+second, whether the keyboard or trackpad had been touched, and drawing the
+result as a line I could not argue with.
 
-Once every focused block was going through it, the obvious question was
-what those blocks had actually produced — so it started writing that down.
-Now it is how I track my work habits over time.
+Then I noticed I was starting it before work too — the shape is identical:
+sit down, do one thing, resurface when the bell rings. It replaced my
+pomodoro timer, which is a sentence I would have found insufferable a year
+ago; building your own focus tool is arguably the finest procrastination
+available, and I offer no defence.
+
+The cheating detector turned out to be the more interesting half. The same
+measurement that catches you fidgeting through a sit shows, across weeks,
+how productive you actually were and how steady the flow was. Once every
+focused block was running through it, the obvious next question was what
+those blocks produced — so it started writing that down too.
 
 It pairs with an agent skill I run alongside it, which keeps my issue
 tracker updated as I work rather than in a scramble at the end of the day.
@@ -98,8 +105,8 @@ read by an agent as much as by me.
 
 That history is why there is one kind of session and no work/meditation
 flag, and why the app reports your stillness but never judges it. During a
-sit, input means distraction. During deep work, it means engagement. Same
-number, opposite meanings, and only you know which you sat down for.
+sit, input is distraction. During deep work, it is engagement. One
+measurement, opposite meanings, and only you know which you sat down for.
 
 ## Quick start
 
