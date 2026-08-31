@@ -214,7 +214,7 @@ Create a personal API key in Linear under **Settings > Security & access >
 Personal API keys**, then put it in a `.env`:
 
 ```
-cp .env.example ~/.meditate/.env
+mkdir -p ~/.meditate && cp .env.example ~/.meditate/.env
 $EDITOR ~/.meditate/.env          # LINEAR_API_KEY=lin_api_...
 ```
 
