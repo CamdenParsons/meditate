@@ -102,6 +102,13 @@ Once every focused block was going through it, the obvious question was
 what those blocks had actually produced — so it started writing that down.
 Now it is how I track my work habits over time.
 
+It pairs with an agent skill I run alongside it, which keeps my issue
+tracker updated as I work rather than in a scramble at the end of the day.
+The two halves close a loop: the skill records what the work *was*, and
+this records when I was actually at it, and for how long. The session log
+is one JSON object per line for exactly that reason — it is meant to be
+read by an agent as much as by me.
+
 That history is why there is one kind of session and no work/meditation
 flag, and why the app reports your stillness but never judges it. During a
 sit, input means distraction. During deep work, it means engagement. Same
