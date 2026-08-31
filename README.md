@@ -1,21 +1,14 @@
 # meditate
 
-**Structured session tracking for engineers — for focused work and for
-meditation, which turn out to be the same thing.**
+A focus timer for the terminal that records what each session actually
+produced.
 
-You start a session when you sit down. A gong marks the intervals. When it
-ends it records how long you sat, how still you were, and what you actually
-did — the Claude Code sessions, commits, pull requests and Linear issues
-from that window.
-
-A timer measures the container, never the contents. It will tell you that
-you sat for twenty-five minutes and has no idea whether you were there for
-any of it. This one records both.
-
-It samples once a second whether you touched the keyboard or trackpad —
-never *which* keys. That distinction is the whole design: `HIDIdleTime`
-reports only how long since the last input, so there is nothing to capture
-and no permission to grant.
+You start it when you sit down to work. It counts down, and at intervals
+it strikes a gong — a real recorded one rather than a notification chime,
+because a chime is easy to tune out and forty seconds of decaying bronze
+is not. When the session ends it writes a single line to a log: how long
+you sat, how much of that time you were at the keyboard, and what came
+out of it.
 
 ```
                        \\       |             |       //
@@ -55,7 +48,18 @@ and no permission to grant.
                            [space] pause   [q] end
 ```
 
-Afterwards:
+A timer measures the container, never the contents. It will tell you that
+you sat for twenty-five minutes and has no idea whether you were there for
+any of it. This one measures both ends.
+
+For the first, it samples once a second whether the keyboard or trackpad
+was touched — never *which* keys. `HIDIdleTime` reports only how long
+since the last input, so there is nothing to capture and no permission to
+grant.
+
+For the second, when a session closes it asks your tools what they
+recorded in that window: git commits, pull requests, and — if you use them
+— Claude Code sessions and Linear issues.
 
 ```
 $ meditate log
@@ -69,9 +73,12 @@ Bars are the session's shape, the percentage is how much of it had input.
 The `~` marks one you walked away from: it expired, and is recorded as
 ending at your last input rather than hours later.
 
-**macOS only.** Sound goes through `afplay`, and the stillness tracking
-reads `HIDIdleTime` from `ioreg`. Nothing else is needed: Python 3
-standard library, no dependencies, no install step.
+**macOS only.** Sound goes through `afplay`, and the input sampling reads
+`HIDIdleTime` from `ioreg`. Nothing else is needed: Python 3 standard
+library, no dependencies, no install step.
+
+It is called *meditate* because that is what it was built for first. The
+next section explains how a meditation timer turned into this.
 
 ## Where it came from
 
@@ -146,19 +153,12 @@ would log eight hours. See [ADR 0003](docs/adr/0003-expiry-ends-at-last-input.md
 
 ## What gets recorded
 
-Once a second, the app asks macOS how long since the last keyboard, mouse
-or trackpad event. It records only *whether* input happened and *when* —
-never which keys. That needs no permission and captures no content. See
-[ADR 0001](docs/adr/0001-presence-is-timing-only.md).
+Once a second: whether there was input, and when. Never which keys — which
+is why it needs no permission and captures no content
+([ADR 0001](docs/adr/0001-presence-is-timing-only.md)).
 
-```
-2026-08-31 09:12    2:28:00  ▅▆▇▇█▆▅▄▄▃▂▁▆▇▇▇▇██▆▅▄▃▂▂▁  ▁▁▂▂▃▄  57%
-2026-08-31 13:02  ~   32:00  ▁                               ▁     2%
-```
-
-The `~` marks an expired session. The bars are the shape of the session;
-the percentage is how much of it had input. The app does not tell you
-whether that is good — it depends what you sat down to do.
+The app will not tell you whether your stillness was good. That depends on
+what you sat down to do, and it does not know.
 
 Sessions live in `~/.meditate/sessions.jsonl`, one JSON object per line,
 each stamped with the device name so several machines can be merged later.
