@@ -109,7 +109,9 @@ def _log(limit):
         mark = {"expired": "~", "you": " ", "duration": " "}.get(r.get("ended_by"), " ")
         line = f"  {when:%Y-%m-%d %H:%M}  {mark}{mmss(r['seconds']):>8}"
         if s:
-            line += f"  {GREY}{sparkline(s['buckets'])}{RESET} {percent(s):3.0f}%"
+            line += f"  {GREY}{sparkline(s['buckets'])}{RESET} {percent(s):3.0f}% in"
+            if s.get("steady") is not None:
+                line += f"  {s['steady']:3d}% steady"
         print(line)
         summary = rollup(r.get("progress"))
         if summary:

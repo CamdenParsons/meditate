@@ -9,7 +9,9 @@ distraction or engagement depends on what you sat down to do, and the
 app does not know that - so it shows the numbers and lets you read them.
 """
 
-BUCKETS = 34  # how many columns a timeline is summarised into
+BUCKETS = 34        # how many columns a timeline is summarised into
+MINUTE = 60         # samples per bucket when measuring steadiness
+MIN_MINUTES = 5     # below this there is not enough shape to judge
 
 
 class PresenceLog:
@@ -44,6 +46,30 @@ class PresenceLog:
         self._samples = self._samples[:max(1, int(keep))]
         return self
 
+    def steadiness(self):
+        """How evenly the work was spread, 0 to 100, or None.
+
+        Separate from the input percentage on purpose: that says how much
+        you did, this says whether you did it at an even rate. An hour of
+        steady work and an hour that alternated between bursts and empty
+        stretches can share a percentage and feel nothing alike.
+
+        None when there is too little to judge: a session shorter than a
+        few minutes, or one with almost no input at all, where evenness
+        would be arithmetic rather than meaning.
+        """
+        minutes = [self._samples[i:i + MINUTE]
+                   for i in range(0, len(self._samples), MINUTE)]
+        minutes = [sum(m) / len(m) for m in minutes if m]
+        if len(minutes) < MIN_MINUTES:
+            return None
+        mean = sum(minutes) / len(minutes)
+        if mean < 0.02:
+            return None
+        var = sum((x - mean) ** 2 for x in minutes) / len(minutes)
+        cv = (var ** 0.5) / mean
+        return round(max(0.0, min(100.0, (1 - cv) * 100)))
+
     def summary(self):
         n = len(self._samples)
         if not n:
@@ -59,8 +85,12 @@ class PresenceLog:
             longest = max(longest, run)
         bursts = sum(1 for i, s in enumerate(self._samples)
                      if s and (i == 0 or not self._samples[i - 1]))
-        return {"samples": n, "present": sum(self._samples),
-                "longest_still": longest, "bursts": bursts, "buckets": buckets}
+        out = {"samples": n, "present": sum(self._samples),
+               "longest_still": longest, "bursts": bursts, "buckets": buckets}
+        steady = self.steadiness()
+        if steady is not None:
+            out["steady"] = steady
+        return out
 
 
 def percent(summary):
@@ -75,8 +105,11 @@ def describe(summary):
         return ""
     pct = percent(summary)
     still = summary.get("longest_still", 0)
-    return (f"{pct:.0f}% input, longest still stretch "
+    line = (f"{pct:.0f}% input, longest still stretch "
             f"{still // 60:d}:{still % 60:02d}, {summary.get('bursts', 0)} bursts")
+    if summary.get("steady") is not None:
+        line += f", {summary['steady']}% steady"
+    return line
 
 
 def read_summary(row):

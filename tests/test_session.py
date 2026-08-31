@@ -174,5 +174,43 @@ class BadInput(unittest.TestCase):
         self.assertIn("Don't know", out)
 
 
+class Steadiness(unittest.TestCase):
+    """Evenness of work, separate from how much of it there was."""
+
+    def _steady(self, samples):
+        from medcore.presence import PresenceLog
+        return PresenceLog(samples).steadiness()
+
+    def test_even_work_scores_high(self):
+        even = [i % 2 == 0 for i in range(3600)]
+        self.assertGreater(self._steady(even), 90)
+
+    def test_bursts_and_empty_stretches_score_low(self):
+        choppy = [(i // 60) % 2 == 0 for i in range(3600)]
+        self.assertLess(self._steady(choppy), 20)
+
+    def test_intensity_and_steadiness_are_independent(self):
+        # light but even work is steady, even though the percentage is low
+        light = [i % 20 == 0 for i in range(3600)]
+        self.assertGreater(self._steady(light), 80)
+
+    def test_too_short_to_judge(self):
+        self.assertIsNone(self._steady([True] * 120))
+
+    def test_a_still_session_is_not_judged(self):
+        # steadiness of almost nothing is arithmetic, not meaning
+        self.assertIsNone(self._steady([False] * 3600))
+
+    def test_it_reaches_the_stored_summary(self):
+        from medcore.presence import PresenceLog
+        su = PresenceLog([i % 2 == 0 for i in range(3600)]).summary()
+        self.assertIn("steady", su)
+        self.assertIsInstance(su["steady"], int)
+
+    def test_absent_from_the_summary_when_unjudgeable(self):
+        from medcore.presence import PresenceLog
+        self.assertNotIn("steady", PresenceLog([False] * 600).summary())
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

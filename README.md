@@ -89,17 +89,26 @@ Every session appends one line to `~/.meditate/sessions.jsonl`.
 
 ```
 $ meditate log
-  2026-08-30 09:12    2:28:00  ▅▆▇▇█▆▅▄▄▃▂▁▆▇▇▇▇██▆▅▄▃▂▂▁  ▁▁▂▂▃▄  57%
+  2026-08-30 09:12    2:28:00  ▅▆▇▇█▆▅▄▄▃▂▁▆▇▇▇▇██▆▅▄▃▂▂▁  ▁▁▂▂▃▄  57% in   91% steady
                      claude (3 sessions)  linear (2 issues)  github (1 PR, 3 branches)  2 commits
 
-  2026-08-30 14:02  ~   32:00  ▁                               ▁     2%
+  2026-08-30 14:02  ~   32:00  ▁                               ▁     2% in
 
   2 sessions over 1 day, 3:00:00 total.
 ```
 
-The bars are the shape of the session. The percentage is how much of it had
-keyboard or trackpad input. A `~` marks one that expired because you walked
-away.
+The bars are the shape of the session. Two numbers follow them.
+
+`57% in` is how much of the session had keyboard or trackpad input,
+measured once a second. Reading a diff for three minutes counts as
+inactive, so this is hands-on-input time rather than engagement.
+
+`91% steady` is how evenly that input was spread. An hour of even work and
+an hour that alternated between bursts and empty stretches can share the
+same percentage and feel nothing alike. It is left blank on a session too
+short or too still to judge.
+
+A `~` marks one that expired because you walked away.
 
 The second line rolls up what the session touched. To see the individual
 records, expand one session with `meditate show`.
