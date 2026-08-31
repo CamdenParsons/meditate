@@ -233,6 +233,12 @@ def _s(n):
     return "" if n == 1 else "s"
 
 
+def short_path(p):
+    """A transcript path with the home directory folded to ~."""
+    home = str(Path.home())
+    return p.replace(home, "~", 1) if p and p.startswith(home) else (p or "")
+
+
 def progress_detail(prog):
     """The full picture, for `meditate show`."""
     if not prog:

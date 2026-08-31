@@ -237,5 +237,43 @@ class Rollup(unittest.TestCase):
         self.assertEqual(self._r({"claude": [], "github": {}, "commits": []}), "")
 
 
+class Detail(unittest.TestCase):
+    """`meditate show` renders whatever the providers stored."""
+
+    def test_renders_a_claude_entry_with_a_transcript_path(self):
+        # a block replacement once deleted short_path, and every real
+        # session carries a path, so show crashed on all of them
+        from medcore.display import progress_detail
+        out = progress_detail({"claude": [{
+            "id": "abc", "cwd": "/tmp/repo", "messages": 12,
+            "title": "a title", "prompts": ["first thing"],
+            "path": "/tmp/repo/.claude/x.jsonl"}]})
+        self.assertIn("a title", out)
+        self.assertIn("first thing", out)
+        self.assertIn("x.jsonl", out)
+
+    def test_renders_every_provider_together(self):
+        from medcore.display import progress_detail
+        out = progress_detail({
+            "tickets": ["ACME-1"],
+            "linear": [{"id": "ACME-2", "title": "t", "status": "Done"}],
+            "github": {"prs": [{"repo": "a/b", "action": "opened",
+                                "number": 1, "title": "p"}],
+                       "pushes": [{"repo": "a/b", "ref": "main"}],
+                       "branches": [{"repo": "a/b", "ref": "feat"}],
+                       "reviews": [{"repo": "a/b", "number": 2, "title": "r"}],
+                       "issues": [{"repo": "a/b", "number": 3, "title": "i"}]},
+            "commits": [{"repo": "b", "sha": "abc1234", "subject": "s"}],
+            "claude": [{"id": "z", "cwd": "/tmp/b", "messages": 1,
+                        "title": "c", "prompts": [], "path": "/tmp/b/z.jsonl"}],
+        })
+        for expected in ("ACME-1", "ACME-2", "a/b#1", "abc1234", "z.jsonl"):
+            self.assertIn(expected, out)
+
+    def test_nothing_recorded_is_handled(self):
+        from medcore.display import progress_detail
+        self.assertIn("Nothing", progress_detail(None))
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
