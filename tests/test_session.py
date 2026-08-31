@@ -140,5 +140,39 @@ class ClosingGong(unittest.TestCase):
         self.assertEqual(r.s.close()["gongs"], heard)
 
 
+class BadInput(unittest.TestCase):
+    """Nonsense settings should be refused, not obeyed."""
+
+    def _run(self, argv):
+        from medcore.cli import main
+        import io, contextlib
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            code = main(argv)
+        return code, buf.getvalue()
+
+    def test_a_negative_interval_is_refused(self):
+        # it used to be obeyed: every tick was "overdue", so a one minute
+        # session rang sixty times
+        code, out = self._run(["10", "-i", "-5"])
+        self.assertEqual(code, 1)
+        self.assertIn("cannot be negative", out)
+
+    def test_a_negative_expiry_is_refused(self):
+        # it used to expire the session on the first tick
+        code, out = self._run(["10", "-e", "-5"])
+        self.assertEqual(code, 1)
+        self.assertIn("cannot be negative", out)
+
+    def test_a_zero_length_session_is_refused(self):
+        code, out = self._run(["0"])
+        self.assertEqual(code, 1)
+
+    def test_a_word_that_is_not_a_command_is_refused(self):
+        code, out = self._run(["banana"])
+        self.assertEqual(code, 1)
+        self.assertIn("Don't know", out)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

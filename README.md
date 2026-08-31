@@ -1,7 +1,15 @@
 # meditate
 
-A terminal timer for focused sitting, that strikes a real gong and keeps
-an honest record of what you actually did.
+**Structured session tracking for engineers — for focused work and for
+meditation, which turn out to be the same thing.**
+
+You start a session when you sit down. A gong marks the intervals. When it
+ends it records how long you sat, how still you were, and what you actually
+did — the Claude Code sessions, commits, pull requests and Linear issues
+from that window.
+
+Timers are everywhere; a timer that writes down what the block produced is
+not. That record is the point.
 
 ```
                        \\       |             |       //
@@ -41,13 +49,31 @@ an honest record of what you actually did.
                            [space] pause   [q] end
 ```
 
-Meditation and work are the same thing here: you sat down deliberately to
-do one thing. So there is one kind of session, and the app never tells you
-whether being still was good — that depends what you sat down for.
+Afterwards:
+
+```
+$ meditate log
+  2026-08-30 09:12    2:28:00  ▅▆▇▇█▆▅▄▄▃▂▁▆▇▇▇▇██▆▅▄▃▂▂▁  ▁▁▂▂▃▄  57%  ACME-482  webhook retry backoff
+  2026-08-30 14:02  ~   32:00  ▁                               ▁     2%
+
+  2 sessions over 1 day, 3:00:00 total.
+```
+
+Bars are the session's shape, the percentage is how much of it had input.
+The `~` marks one you walked away from: it expired, and is recorded as
+ending at your last input rather than hours later.
 
 **macOS only.** Sound goes through `afplay`, and the stillness tracking
-reads `HIDIdleTime` from `ioreg`. Both are macOS. Nothing else is needed:
-Python 3 standard library, no dependencies, no install step.
+reads `HIDIdleTime` from `ioreg`. Nothing else is needed: Python 3
+standard library, no dependencies, no install step.
+
+## Quick start
+
+```
+git clone https://github.com/CamdenParsons/meditate
+cd meditate
+./meditate 20 -i 5      # 20 minutes, gong every 5
+```
 
 ```
 ./meditate            start a session, gong every 30 min

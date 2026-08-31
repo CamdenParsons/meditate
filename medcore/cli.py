@@ -158,7 +158,12 @@ def main(argv=None):
         return 0
     if a.target == "bell":
         audio.ring()
-        time.sleep(audio.seconds() + 0.5)
+        secs = audio.seconds()
+        print(f"  {DIM}ringing — {secs:.0f}s, ctrl-c to cut it short{RESET}")
+        try:
+            time.sleep(secs + 0.5)
+        except KeyboardInterrupt:
+            print()
         return 0
 
     duration = None
@@ -171,6 +176,12 @@ def main(argv=None):
         if duration <= 0:
             print("A session has to be longer than zero.")
             return 1
+    if a.interval < 0:
+        print("A gong interval cannot be negative. Use 0 for no gong.")
+        return 1
+    if a.expire < 0:
+        print("An expiry cannot be negative. Use 0 to never expire.")
+        return 1
 
     _drive(Session(duration=duration,
                    interval=a.interval * 60,
