@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 from . import activity, audio, config, store
 from .display import (CLEAR, DIM, GOLD, GREY, HIDE, HOME, RESET, SHOW, WHITE,
                       farewell, hhmm, mmss, progress_detail, rollup, screen,
-                      sparkline, why_no_steadiness)
+                      sparkline, why_no_evenness)
 from .presence import percent, read_summary
 from .session import EXPIRE, INTERVAL, Session
 
@@ -110,10 +110,10 @@ def _log(limit):
         line = f"  {when:%Y-%m-%d %H:%M}  {mark}{mmss(r['seconds']):>8}"
         if s:
             line += f"  {sparkline(s['buckets'])} {percent(s):3.0f}% in"
-            if s.get("steady") is not None:
-                line += f"  {s['steady']:3d}% steady"
+            if s.get("even") is not None:
+                line += f"  {s['even']:3d}% even"
             else:
-                line += f"  {DIM}{why_no_steadiness(s)}{RESET}"
+                line += f"  {DIM}{why_no_evenness(s)}{RESET}"
         print(line)
         # every session gets a second line, so the list does not look ragged
         summary = rollup(r.get("progress"))

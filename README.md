@@ -5,8 +5,12 @@ sessions at your desk. Use it to track a personal meditation session, or
 your flow and productivity at work.
 
 It counts down and plays a gong at intervals. When the session ends it
-writes one line to a plain text file: how long you sat, how much of that
-time you were at the keyboard, and what came out of it.
+asks your tools what happened while you sat, and writes it down: the
+commits, pull requests, issues and Claude Code sessions from that window,
+alongside how long you sat and how much of it you were at the keyboard.
+
+Plenty of things time a work session. The part worth having is the record
+of what came out of it.
 
 The sound is a zen gong. I use it the way tingsha are used in Buddhist
 meditation, to mark the intervals and bring my attention back to the
@@ -62,10 +66,9 @@ The bars are the shape of the session. Two numbers follow them.
 measured once a second. Reading a diff for three minutes counts as
 inactive, so this is hands-on-input time rather than engagement.
 
-`91% steady` is how evenly that input was spread. An hour of even work and
-an hour that alternated between bursts and empty stretches can share the
-same percentage and feel nothing alike. It is left blank on a session too
-short or too still to judge.
+`91% even` is how evenly that input was spread. It is a description of
+shape, not a score, and high is not better. It is blank on a session too
+short or too still for the arithmetic to mean anything.
 
 A `~` marks one that expired because you walked away.
 
@@ -75,6 +78,23 @@ records, expand one session with `meditate show`.
 Once a second the app records whether there was input, and when. It never
 records which keys, which is why it needs no permission and captures no
 content.
+
+### Input is presence, not focus
+
+Twenty minutes reading a diff and four minutes typing scores badly here.
+A bad afternoon fighting a flaky test scores well. If most of your code is
+now written by an agent, hands on the keyboard measures something closer
+to how much correcting you are doing.
+
+So do not read `% in` as productivity. It answers a narrower question,
+were you at the machine, and it is worth having for narrower reasons: it
+is what lets a session expire at your last keystroke instead of logging
+the hours you spent at lunch, and it is the original question this tool
+was built to answer, where the goal was to sit still and not touch
+anything.
+
+What a session produced is the useful half. That is what `meditate show`
+is for.
 
 `meditate show` opens a single session and lists everything attributed to
 it:

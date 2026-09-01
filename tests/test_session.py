@@ -140,13 +140,13 @@ class ClosingGong(unittest.TestCase):
         self.assertEqual(r.s.close()["gongs"], heard)
 
 
-class WithheldSteadiness(unittest.TestCase):
+class WithheldEvenness(unittest.TestCase):
     """When steadiness is withheld the row says why, rather than nothing."""
 
     def _why(self, samples):
-        from medcore.display import why_no_steadiness
+        from medcore.display import why_no_evenness
         from medcore.presence import PresenceLog
-        return why_no_steadiness(PresenceLog(samples).summary())
+        return why_no_evenness(PresenceLog(samples).summary())
 
     def test_a_short_session_says_so(self):
         self.assertEqual(self._why([True] * 120), "too short to judge")
@@ -189,12 +189,12 @@ class BadInput(unittest.TestCase):
         self.assertIn("Don't know", out)
 
 
-class Steadiness(unittest.TestCase):
+class Evenness(unittest.TestCase):
     """Evenness of work, separate from how much of it there was."""
 
     def _steady(self, samples):
         from medcore.presence import PresenceLog
-        return PresenceLog(samples).steadiness()
+        return PresenceLog(samples).evenness()
 
     def test_even_work_scores_high(self):
         even = [i % 2 == 0 for i in range(3600)]
@@ -219,12 +219,12 @@ class Steadiness(unittest.TestCase):
     def test_it_reaches_the_stored_summary(self):
         from medcore.presence import PresenceLog
         su = PresenceLog([i % 2 == 0 for i in range(3600)]).summary()
-        self.assertIn("steady", su)
-        self.assertIsInstance(su["steady"], int)
+        self.assertIn("even", su)
+        self.assertIsInstance(su["even"], int)
 
     def test_absent_from_the_summary_when_unjudgeable(self):
         from medcore.presence import PresenceLog
-        self.assertNotIn("steady", PresenceLog([False] * 600).summary())
+        self.assertNotIn("even", PresenceLog([False] * 600).summary())
 
 
 if __name__ == "__main__":

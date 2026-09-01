@@ -214,8 +214,8 @@ def screen(session, width, height=None):
     return CLEAR + HOME + "\n" * top + "\n".join(body)
 
 
-def why_no_steadiness(summary):
-    """Steadiness is withheld sometimes. Say which reason, not nothing."""
+def why_no_evenness(summary):
+    """Evenness is withheld sometimes. Say which reason, not nothing."""
     if not summary:
         return ""
     if summary.get("samples", 0) < MIN_STEADY_SAMPLES:

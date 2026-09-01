@@ -46,17 +46,19 @@ class PresenceLog:
         self._samples = self._samples[:max(1, int(keep))]
         return self
 
-    def steadiness(self):
-        """How evenly the work was spread, 0 to 100, or None.
+    def evenness(self):
+        """How evenly the input was spread, 0 to 100, or None.
 
-        Separate from the input percentage on purpose: that says how much
-        you did, this says whether you did it at an even rate. An hour of
-        steady work and an hour that alternated between bursts and empty
-        stretches can share a percentage and feel nothing alike.
+        A description of shape, not a score. High is not better: thinking
+        then typing is the natural rhythm of programming, and a session
+        that reads for ten minutes and writes for five is uneven by
+        construction and none the worse for it. It is here because an
+        hour of level work and an hour of bursts against empty stretches
+        can share an input percentage and look nothing alike.
 
-        None when there is too little to judge: a session shorter than a
-        few minutes, or one with almost no input at all, where evenness
-        would be arithmetic rather than meaning.
+        None when the arithmetic would outrun the meaning: a session
+        under a few minutes, or one with almost no input, where the
+        coefficient of variation is mostly noise.
         """
         minutes = [self._samples[i:i + MINUTE]
                    for i in range(0, len(self._samples), MINUTE)]
@@ -87,9 +89,9 @@ class PresenceLog:
                      if s and (i == 0 or not self._samples[i - 1]))
         out = {"samples": n, "present": sum(self._samples),
                "longest_still": longest, "bursts": bursts, "buckets": buckets}
-        steady = self.steadiness()
-        if steady is not None:
-            out["steady"] = steady
+        even = self.evenness()
+        if even is not None:
+            out["even"] = even
         return out
 
 
@@ -107,8 +109,8 @@ def describe(summary):
     still = summary.get("longest_still", 0)
     line = (f"{pct:.0f}% input, longest still stretch "
             f"{still // 60:d}:{still % 60:02d}, {summary.get('bursts', 0)} bursts")
-    if summary.get("steady") is not None:
-        line += f", {summary['steady']}% steady"
+    if summary.get("even") is not None:
+        line += f", {summary['even']}% even"
     return line
 
 
@@ -122,4 +124,6 @@ def read_summary(row):
                  "\u2585": "5", "\u2586": "6", "\u2587": "7", "\u2588": "8"}
         a = dict(a, buckets="".join(table.get(c, "0") for c in a["spark"]))
     a.setdefault("present", a.get("active", 0))
+    if "even" not in a and "steady" in a:      # rows written before the rename
+        a["even"] = a["steady"]
     return a
