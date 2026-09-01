@@ -30,6 +30,7 @@ LADDER = [_c(238), _c(94), _c(136), _c(137), _c(179), _c(179), _c(214),
           _c(214), _c(222)]
 HIDE, SHOW, CLEAR, HOME = "\033[?25l", "\033[?25h", "\033[2J", "\033[H"
 BARS = "·▁▂▃▄▅▆▇█"   # a dot at zero, so an empty session still draws a line
+MIN_STEADY_SAMPLES = 300   # matches presence.MIN_MINUTES
 
 GLYPHS = {
     "0": ["███", "█ █", "█ █", "█ █", "███"],
@@ -181,6 +182,15 @@ def screen(session, width, height=None):
 
     top = max(0, ((height or len(body) + 2) - len(body)) // 2)
     return CLEAR + HOME + "\n" * top + "\n".join(body)
+
+
+def why_no_steadiness(summary):
+    """Steadiness is withheld sometimes. Say which reason, not nothing."""
+    if not summary:
+        return ""
+    if summary.get("samples", 0) < MIN_STEADY_SAMPLES:
+        return "too short to judge"
+    return "too still to judge"
 
 
 def rollup(prog, colour=True):

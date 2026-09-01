@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 from . import activity, audio, config, store
 from .display import (CLEAR, DIM, GOLD, GREY, HIDE, HOME, RESET, SHOW, WHITE,
                       farewell, hhmm, mmss, progress_detail, rollup, screen,
-                      sparkline)
+                      sparkline, why_no_steadiness)
 from .presence import percent, read_summary
 from .session import EXPIRE, INTERVAL, Session
 
@@ -112,10 +112,13 @@ def _log(limit):
             line += f"  {sparkline(s['buckets'])} {percent(s):3.0f}% in"
             if s.get("steady") is not None:
                 line += f"  {s['steady']:3d}% steady"
+            else:
+                line += f"  {DIM}{why_no_steadiness(s)}{RESET}"
         print(line)
+        # every session gets a second line, so the list does not look ragged
         summary = rollup(r.get("progress"))
-        if summary:
-            print(f"  {' ' * 19}{WHITE}{summary}{RESET}")
+        print(f"  {' ' * 19}"
+              f"{WHITE + summary + RESET if summary else DIM + 'no activity recorded' + RESET}")
         by_day.setdefault(when.date(), 0)
         by_day[when.date()] += r["seconds"]
     total = sum(r["seconds"] for r in rows)

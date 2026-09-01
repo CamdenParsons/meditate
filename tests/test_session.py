@@ -140,6 +140,21 @@ class ClosingGong(unittest.TestCase):
         self.assertEqual(r.s.close()["gongs"], heard)
 
 
+class WithheldSteadiness(unittest.TestCase):
+    """When steadiness is withheld the row says why, rather than nothing."""
+
+    def _why(self, samples):
+        from medcore.display import why_no_steadiness
+        from medcore.presence import PresenceLog
+        return why_no_steadiness(PresenceLog(samples).summary())
+
+    def test_a_short_session_says_so(self):
+        self.assertEqual(self._why([True] * 120), "too short to judge")
+
+    def test_a_still_session_says_so(self):
+        self.assertEqual(self._why([False] * 3600), "too still to judge")
+
+
 class BadInput(unittest.TestCase):
     """Nonsense settings should be refused, not obeyed."""
 
