@@ -4,20 +4,53 @@ A pomodoro-style timer you start from your terminal, that automatically
 tracks your activity and organises it by session. Use it for a personal
 meditation session, or for your flow and productivity at work.
 
-It counts down and plays a gong at intervals. When the session ends it
-asks your tools what happened while you sat and writes it down, with
-nothing for you to fill in: the commits, pull requests, issues and Claude
-Code sessions from that window, alongside how long you sat and how much
-of it you were at the keyboard.
+It counts down and rings a gong every so often. When the session's over it
+goes and asks your tools what happened while you were sitting there, then
+writes it down. Commits, pull requests, issues, Claude Code sessions. Plus
+how long you sat and how much of that you actually spent typing. You don't
+fill in anything.
 
-Plenty of things time a work session. The part worth having is the record
-of what came out of it.
+Lots of things will time a work session. What I wanted was the record of
+what came out of one.
 
-The sound is a zen gong. I use it the way tingsha are used in Buddhist
-meditation, to mark the intervals and bring my attention back to the
-session.
+The sound's a zen gong. I use it like tingsha in Buddhist meditation, to
+mark the intervals and pull my attention back.
 
 ![the timer running](docs/screenshots/timer.png)
+
+## Where it came from
+
+It started as a meditation timer. I wanted a real gong and nothing else.
+
+The tracking came second, and for a slightly embarrassing reason: I wanted
+to know if I was cheating. It's very easy to sit down for twenty minutes
+and spend six of them answering a message. So it started checking once a
+second whether I'd touched anything, and drawing that as a line. Hard to
+argue with a line.
+
+Then I started using it for focus blocks at work, because it's the same
+shape. Sit down, do one thing, stop when the bell rings. It replaced my
+pomodoro timer. And yes, building your own focus timer is itself a way of
+avoiding work.
+
+I kept the gong. Marking the intervals by ear works just as well at a desk
+as on a cushion, and it tells me where I am without looking up.
+
+The tracking turned out to be the more useful half. That same line showing
+whether I sat still also shows, across a few weeks, how much of my focus
+time was real. And once every block was going through it, the obvious next
+question was what those blocks actually produced. So it started recording
+that too.
+
+It pairs with an agent skill I run that keeps my issue tracker current
+while I work, rather than in a scramble at 6pm. The skill knows what the
+work was. This knows when I was actually doing it, and for how long.
+
+That's why there's one kind of session and no work-or-meditation setting,
+and why the app shows you the numbers but never grades them. During a sit,
+activity means you got distracted. During focus time it means you were
+working. Same number, opposite meanings, and only you know which one you
+sat down for.
 
 ## Quick start
 
@@ -61,58 +94,55 @@ Every session appends one line to `~/.meditate/sessions.jsonl`.
 *Example data, so the shapes differ. Every number in it was produced by
 the real code.*
 
-The bars are the shape of the session. Two numbers follow them.
+The bars are the shape of the session. Then two numbers.
 
 `57% in` is how much of the session had keyboard or trackpad input,
-measured once a second. Reading a diff for three minutes counts as
-inactive, so this is hands-on-input time rather than engagement.
+sampled once a second. Read a diff for three minutes and that counts as
+inactive, so it's really hands-on-keys time, not engagement.
 
-`91% even` is how evenly that input was spread. It is a description of
-shape, not a score, and high is not better. It is blank on a session too
-short or too still for the arithmetic to mean anything.
+`91% even` is how evenly that input was spread. It describes a shape and
+nothing more. High isn't better. It's blank on a session that's too short
+or too still for the arithmetic to mean much.
 
 A `~` marks one that expired because you walked away.
 
-The second line rolls up what the session touched. To see the individual
-records, expand one session with `meditate show`.
+The second line rolls up what the session touched. For the individual
+records, open one up with `meditate show`.
 
-Once a second the app records whether there was input, and when. It never
-records which keys, which is why it needs no permission and captures no
-content.
+Once a second it records whether there was input, and when. Never which
+keys. That's why it needs no permission and captures nothing.
 
-### Input is presence, not focus
+### What the percentage can't tell you
 
-Twenty minutes reading a diff and four minutes typing scores badly here.
-A bad afternoon fighting a flaky test scores well. If most of your code is
-now written by an agent, hands on the keyboard measures something closer
-to how much correcting you are doing.
+Twenty minutes reading a diff and four minutes typing will score badly
+here. A bad afternoon fighting a flaky test scores great. And if an agent
+writes most of your code now, hands on the keyboard is closer to a measure
+of how much correcting you're doing.
 
-So do not read `% in` as productivity. It answers a narrower question,
-were you at the machine, and it is worth having for narrower reasons: it
-is what lets a session expire at your last keystroke instead of logging
-the hours you spent at lunch, and it is the original question this tool
-was built to answer, where the goal was to sit still and not touch
-anything.
+So don't read `% in` as productivity. It answers a smaller question, which
+is whether you were at the machine. That's still worth knowing. It's what
+lets a session expire at your last keystroke instead of logging the hour
+you were at lunch, and it's the original question I built this to answer,
+back when the goal was to sit still and touch nothing.
 
-What a session produced is the useful half. That is what `meditate show`
-is for.
+The useful half is what the session produced. That's `meditate show`.
 
 `meditate show` opens a single session and lists everything attributed to
 it:
 
 ![meditate show](docs/screenshots/show.png)
 
-All of it is read from traces your work already leaves. There is nothing
-to fill in.
+All of it comes from traces your work already leaves behind. Nothing to
+fill in.
 
-Attribution is by time window. Whatever your accounts did between the
+It attributes by time window, so whatever your accounts did between the
 session opening and its recorded end is what gets stored.
 
 ## Activity providers
 
-When a session ends, each provider is asked what it saw during that
-window. Every one is best-effort. A provider that fails, or that finds
-nothing, is skipped and the session is still recorded.
+When a session ends, each provider gets asked what it saw in that window.
+They're all best-effort. One that fails, or finds nothing, is skipped and
+the session still gets recorded.
 
 | provider  | what it answers                                  | needs            |
 |-----------|--------------------------------------------------|------------------|
@@ -147,21 +177,22 @@ tests/            component tests, on a fake clock
 ```
 
 `session.py` and `presence.py` take their clock and input source as
-arguments, so the ending rules and the hour-long expiry are tested in
-milliseconds. Run the tests with `python3 -m unittest discover -s tests`.
+arguments, so the hour-long expiry rules get tested in milliseconds. Run
+them with `python3 -m unittest discover -s tests`.
 
 ## Common use cases
 
 **A meditation sit.** `meditate 20 -i 5` gives you twenty minutes with a
-gong every five. The goal is to take as few actions as possible, and the
-percentage afterwards tells you whether you managed it.
+gong every five. The goal is to touch nothing, and the percentage
+afterwards tells you if you managed it.
 
 **A pomodoro block.** `meditate 25 -i 0` runs twenty five minutes with
 nothing interrupting, then `meditate show` tells you what came out of it.
 
 **Open-ended deep work.** `meditate` on its own runs until you stop it,
-with a gong every thirty minutes. If you get pulled away and forget about
-it, it expires after an hour and records only the time you were there.
+gonging every thirty minutes. If you get pulled away and forget it's
+running, it expires after an hour and only records the time you were
+actually there.
 
 **Reviewing the week.** `meditate log` shows every session, how present
 you were in each, and which tickets they touched.
