@@ -80,10 +80,10 @@ meditate bell       ring the gong once
 `space` pauses, `q` ends. Start one in a background terminal when you sit
 down and forget about it.
 
-A session ends in one of three ways. You stop it, a fixed length runs out,
-or you stop touching the machine for the expiry window. An expired session
-is recorded as ending at your last input, not when the expiry fired.
-Otherwise walking off at 10am and noticing at 6pm would log eight hours.
+A session ends one of three ways. You stop it, a fixed length runs out, or
+you stop touching the machine long enough to trip the expiry. An expired
+session gets recorded as ending at your last input, so walking off at 10am
+and noticing at 6pm doesn't log you eight hours.
 
 ## The log
 
@@ -98,7 +98,8 @@ The bars are the shape of the session. Then two numbers.
 
 `57% in` is how much of the session had keyboard or trackpad input,
 sampled once a second. Read a diff for three minutes and that counts as
-inactive, so it's really hands-on-keys time, not engagement.
+inactive, so what it really measures is hands on keys. Engagement is a
+different thing.
 
 `91% even` is how evenly that input was spread. It describes a shape and
 nothing more. High isn't better. It's blank on a session that's too short
@@ -182,21 +183,19 @@ them with `python3 -m unittest discover -s tests`.
 
 ## Common use cases
 
-**A meditation sit.** `meditate 20 -i 5` gives you twenty minutes with a
-gong every five. The goal is to touch nothing, and the percentage
-afterwards tells you if you managed it.
+`meditate 20 -i 5` is a sit. Twenty minutes, gong every five. The goal is
+to touch nothing, and the percentage afterwards tells you if you managed
+it.
 
-**A pomodoro block.** `meditate 25 -i 0` runs twenty five minutes with
-nothing interrupting, then `meditate show` tells you what came out of it.
+`meditate 25 -i 0` is a pomodoro block with nothing interrupting it. Run
+`meditate show` afterwards to see what came out.
 
-**Open-ended deep work.** `meditate` on its own runs until you stop it,
-gonging every thirty minutes. If you get pulled away and forget it's
-running, it expires after an hour and only records the time you were
-actually there.
+`meditate` on its own runs until you stop it, gonging every half hour. If
+you get pulled away and forget it's running, it expires after an hour and
+keeps only the time you were actually there.
 
-**Reviewing the week.** `meditate log` shows every session, how present
-you were in each, and which tickets they touched.
+`meditate log` is the week at a glance. Every session, how present you
+were, what each one touched.
 
-**Answering "what was I doing".** `meditate show -n 3` opens the third
-session back and lists the commits, pull requests and Claude sessions from
-that window.
+`meditate show -n 3` opens the third session back, for when you're trying
+to remember what you were doing on Tuesday.
