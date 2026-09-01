@@ -12,43 +12,7 @@ The sound is a zen gong. I use it the way tingsha are used in Buddhist
 meditation, to mark the intervals and bring my attention back to the
 session.
 
-```
-                       \\       |             |       //
-                         \       |           |       /
-                          \                         /
-                   \                                       /
-                    \\                  _                //
-           --                      _ooOoo_                        --
-            ---                   o8888888o                     ---
-               --                 88" . "88                   --
-                                  (| -_- |)
-                                  O\  =  /O
-          -----                ____/`---'\____                  -----
-                             .'  \\|     |//  `.
-                            /  \\|||  :  |||//  \
-                           /  _||||| -:- |||||_  \
-         -----             |   | \\\  -  /'| |   |               -----
-                           | \_|  `\`---'//  |_/ |
-                           \  .-\__ `-. -'__/-.  /
-           ----          ___`. .'  /--.--\  `. .'___            ----
-                      ."" '<  `.___\_<|>_/___.' _> \"".
-                     | | :  `- \`. ;`. _/; .'/ /  .' ; |
-               --    \  \ `-.   \_\_`. _.'_/_/  -' _.' /      --
-            ---       `-.`___`-.__\ \___  /__.-'_.'_.-'         ---
-           --                      `=--=-'                        --
-                    //                                   \\
-                   /                                       \
-                          /                         \
-                         /       |           |       \
-                       //       |             |       \\
-                             █▀█ ▀▀█     █ █ █▀▀
-                             █ █   █  ▀  ▀▀█ ▀▀█
-                             ▀▀▀   ▀  ▀    ▀ ▀▀▀
-                ──────────────────────────────────────────────
-                              next gong in 00:15
-                               still for 00:01
-                           [space] pause   [q] end
-```
+![the timer running](docs/screenshots/timer.png)
 
 ## Quick start
 
@@ -87,15 +51,10 @@ Otherwise walking off at 10am and noticing at 6pm would log eight hours.
 
 Every session appends one line to `~/.meditate/sessions.jsonl`.
 
-```
-$ meditate log
-  2026-08-30 09:12    2:28:00  ▅▆▇▇█▆▅▄▄▃▂▁▆▇▇▇▇██▆▅▄▃▂▂▁  ▁▁▂▂▃▄  57% in   91% steady
-                     claude (3 sessions)  linear (2 issues)  github (1 PR, 3 branches)  2 commits
+![meditate log](docs/screenshots/log.png)
 
-  2026-08-30 14:02  ~   32:00  ▁                               ▁     2% in
-
-  2 sessions over 1 day, 3:00:00 total.
-```
+*Example data, so the shapes differ. Every number in it was produced by
+the real code.*
 
 The bars are the shape of the session. Two numbers follow them.
 
@@ -120,20 +79,7 @@ content.
 `meditate show` opens a single session and lists everything attributed to
 it:
 
-```
-$ meditate show
-  2026-08-30T09:12:00  2:28:00  you
-
-  ACME-482 [In Progress]  Retry the webhook dispatcher on 5xx
-  ACME-491
-  PR opened acme/api#218  Retry the webhook dispatcher (ACME-482)
-  push   acme/api  acme-482-webhook-retries
-  a31b142 api  Back off exponentially instead of fixed 5s
-  claude  412 msgs  api  webhook retry backoff
-           · the dispatcher gives up after one 502, lets fix that
-           · does the backoff need to be jittered
-           ~/.claude/projects/-Users-you-src-api/778b6a01-....jsonl
-```
+![meditate show](docs/screenshots/show.png)
 
 All of it is read from traces your work already leaves. There is nothing
 to fill in.
