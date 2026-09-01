@@ -29,7 +29,7 @@ ART = FIGURE
 LADDER = [_c(238), _c(94), _c(136), _c(137), _c(179), _c(179), _c(214),
           _c(214), _c(222)]
 HIDE, SHOW, CLEAR, HOME = "\033[?25l", "\033[?25h", "\033[2J", "\033[H"
-BARS = " ▁▂▃▄▅▆▇█"
+BARS = "·▁▂▃▄▅▆▇█"   # a dot at zero, so an empty session still draws a line
 
 GLYPHS = {
     "0": ["███", "█ █", "█ █", "█ █", "███"],
