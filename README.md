@@ -10,12 +10,6 @@ answer down. Commits, pull requests, issues and Claude Code sessions from
 that window, along with how long you sat and how much of that time you
 spent typing. Nothing is filled in by hand.
 
-Plenty of things will time a work session. What I wanted was the record of
-what came out of one.
-
-The sound is a zen gong, used the way tingsha are used in Buddhist
-meditation, to mark the intervals and pull my attention back to the
-session.
 
 ![the timer running](docs/screenshots/timer.png)
 
@@ -44,7 +38,7 @@ through it the obvious next question was what those blocks produced, so it
 started recording that as well.
 
 It works alongside an agent skill that keeps my issue tracker current while
-I work rather than in a scramble at the end of the day. The skill records
+I work rather than in a scramble before the sync meeting. The skill records
 what the work was, and this records when I was actually doing it and for
 how long. The log is one JSON object per line, so a program can read it
 about as easily as I can.
@@ -88,55 +82,21 @@ you stop touching the machine long enough to trip the expiry. An expired
 session is recorded as ending at your last input, so walking off at 10am
 and noticing at 6pm does not log you eight hours.
 
-## The log
+## Review your session log
 
 Every session appends one line to `~/.meditate/sessions.jsonl`.
 
 ![meditate log](docs/screenshots/log.png)
 
-*Example data, so the shapes differ. Every number in it was produced by
-the real code.*
 
-The bars are the shape of the session, followed by two numbers.
+The bars are the shape of the session, followed by metrics about how the time was spent.
 
-`57% in` is how much of the session had keyboard or trackpad input, sampled
-once a second. Reading a diff for three minutes counts as inactive, so what
-it measures is time with hands on keys rather than engagement.
 
-`91% even` is how evenly that input was spread across the session. It
-describes a shape and nothing more, and a high number is not a better
-number. It is left blank on a session that is too short or too still for
-the arithmetic to mean much.
-
-The second line rolls up what the session touched. For the individual
-records, open one session with `meditate show`.
-
-Once a second the app records whether there was input and when, but never
-which keys, which is why it needs no permission and captures no content.
-
-### What the percentage cannot tell you
-
-Twenty minutes reading a diff and four minutes typing will score badly
-here, and a bad afternoon fighting a flaky test will score well. If an
-agent writes most of your code now, hands on the keyboard is probably
-closer to a measure of how much correcting you are doing.
-
-So the number should not be read as productivity. It answers the smaller
-question of whether you were at the machine, which is still worth knowing:
-it is what lets a session expire at your last keystroke instead of logging
-the hour you were at lunch, and it is the original question this was built
-to answer, back when the goal was to sit still and touch nothing.
-
-The useful half is what the session produced, which is what `meditate show`
-is for.
+See one session with `meditate show`
 
 ![meditate show](docs/screenshots/show.png)
 
-All of it is read from traces your work already leaves behind, so there is
-nothing to fill in.
 
-Attribution is by time window, which means whatever your accounts did
-between the session opening and its recorded end is what gets stored.
 
 ## Activity providers
 
@@ -157,28 +117,7 @@ Settings live in `~/.meditate/.env`. See [`.env.example`](.env.example).
 Adding a source means writing a module with a `name` and a
 `collect(window, found)`, then listing it in `medcore/activity/__init__.py`.
 
-## Layout
 
-```
-meditate          entry point
-medcore/
-  session.py      a Session: when it ends, what it records
-  activity/       what you did: one module per source
-  config.py       settings, read from .env
-  presence.py     per-second presence, and its summary
-  inputwatch.py   how long since the human last touched the machine
-  audio.py        striking the gong
-  store.py        reading and writing the log
-  display.py      drawing to the terminal
-  cli.py          argument parsing and the terminal loop
-art/              ascii art shown above the clock
-scripts/          build-time art generation
-tests/            component tests, on a fake clock
-```
-
-`session.py` and `presence.py` take their clock and input source as
-arguments, so the hour-long expiry rules are tested in milliseconds. Run
-the tests with `python3 -m unittest discover -s tests`.
 
 ## Common use cases
 
