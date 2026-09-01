@@ -15,12 +15,10 @@ spent typing. Nothing is filled in by hand.
 
 ## Where it came from
 
-It started as a meditation timer. I wanted a real gong and nothing else.
+It started as a meditation timer. All I wanted was an epic sounding gong to go off at a specified interval, and Youtube and Spotify were not providing.
 
 The tracking came second, for a slightly embarrassing reason: I wanted to
-know whether I was cheating. It is easy to sit down for twenty minutes and
-spend six of them answering a message, so it started checking once a second
-whether I had touched anything, and drawing the result as a line.
+know whether I was cheating. If any mouse or keyboard click was tracked and attached to the session, it would be a permanent record reminding me of my failure. I thought this was enough of an incentive to keep myself focused.
 
 Then I started using it for focus blocks at work, because the shape is the
 same. You sit down, do one thing, and stop when the bell rings. It replaced
@@ -34,14 +32,7 @@ without looking up.
 The tracking turned out to be the more useful half. The same line that
 shows whether I stayed still during a meditation also shows, across a few
 weeks, how much of my focus time was real. Once every block was going
-through it the obvious next question was what those blocks produced, so it
-started recording that as well.
-
-It works alongside an agent skill that keeps my issue tracker current while
-I work rather than in a scramble before the sync meeting. The skill records
-what the work was, and this records when I was actually doing it and for
-how long. The log is one JSON object per line, so a program can read it
-about as easily as I can.
+through it the obvious next question was what those blocks produced, so i added "activity providers" to record things like Claude sessions, Git links, and linear issues to my sessions.
 
 That history is probably why there is one kind of session and no work or
 meditation setting, and why the app reports your activity without grading
