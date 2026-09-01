@@ -1,13 +1,14 @@
 # meditate
 
-A pomodoro-style timer you start from your terminal, for managing focused
-sessions at your desk. Use it to track a personal meditation session, or
-your flow and productivity at work.
+A pomodoro-style timer you start from your terminal, that automatically
+tracks your activity and organises it by session. Use it for a personal
+meditation session, or for your flow and productivity at work.
 
 It counts down and plays a gong at intervals. When the session ends it
-asks your tools what happened while you sat, and writes it down: the
-commits, pull requests, issues and Claude Code sessions from that window,
-alongside how long you sat and how much of it you were at the keyboard.
+asks your tools what happened while you sat and writes it down, with
+nothing for you to fill in: the commits, pull requests, issues and Claude
+Code sessions from that window, alongside how long you sat and how much
+of it you were at the keyboard.
 
 Plenty of things time a work session. The part worth having is the record
 of what came out of it.
