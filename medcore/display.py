@@ -13,7 +13,7 @@ def _c(n):
 # know whether your session was good.
 RESET, DIM = "\033[0m", "\033[2m"
 FIGURE = _c(137)     # the Buddha, sitting behind everything
-RAYS = _c(94)        # the halo, dimmer than the figure
+RAYS = _c(145)       # the halo, silver against the gold figure
 GOLD = _c(179)       # the clock
 BRIGHT = _c(222)     # the struck note: bar, live numbers
 WHITE = _c(253)
@@ -88,20 +88,49 @@ def art_options():
     Three tiers so the screen degrades instead of clipping: the haloed
     Buddha, the plain figure, then nothing. MEDITATE_ART overrides with a
     single file of your own.
+
+    Each option is (lines, halo). The halo is the rays on their own layer,
+    written beside the composite by scripts/make_rays.py, so they can be
+    drawn silver behind a gold figure. None means paint it all one colour.
     """
     global _art_cache
     if _art_cache is None:
         override = os.environ.get("MEDITATE_ART")
-        names = [Path(override)] if override else [
-            ART_DIR / "buddha.txt", ART_DIR / "figure.txt"]
+        names = ([(Path(override), None)] if override else
+                 [(ART_DIR / "buddha.txt", ART_DIR / "halo.txt"),
+                  (ART_DIR / "figure.txt", None)])
         out = []
-        for path in names:
+        for path, halo_path in names:
             try:
-                out.append(path.read_text().rstrip("\n").split("\n"))
+                lines = path.read_text().rstrip("\n").split("\n")
             except OSError:
-                pass
+                continue
+            halo = None
+            if halo_path is not None:
+                try:
+                    halo = halo_path.read_text().rstrip("\n").split("\n")
+                except OSError:
+                    halo = None
+            out.append((lines, halo))
         _art_cache = out
     return _art_cache
+
+
+def paint(line, halo_line):
+    """Colour a line of art: rays silver, everything else gold."""
+    if halo_line is None:
+        return FIGURE + line + RESET
+    out, current = [], None
+    for i, ch in enumerate(line):
+        if ch == " ":
+            out.append(ch)
+            continue
+        want = RAYS if (i < len(halo_line) and halo_line[i] != " ") else FIGURE
+        if want != current:
+            out.append(want)
+            current = want
+        out.append(ch)
+    return "".join(out) + RESET
 
 
 def _fits(art, width, height):
@@ -146,11 +175,12 @@ def screen(session, width, height=None):
 
     body = []
 
-    for art in art_options():
+    for art, halo in art_options():
         if _fits(art, width, height or 0):
             art_w = max(len(l) for l in art)
             pad = " " * ((width - art_w) // 2)
-            body += [ART + pad + line + RESET for line in art]
+            for i, line in enumerate(art):
+                body.append(pad + paint(line, halo[i] if halo and i < len(halo) else None))
             body.append("")
             break
 

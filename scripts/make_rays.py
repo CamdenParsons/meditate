@@ -19,6 +19,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 FIGURE = ROOT / "art" / "figure.txt"
 OUT = ROOT / "art" / "buddha.txt"
+HALO = ROOT / "art" / "halo.txt"     # the rays alone, so they can be coloured apart
 
 ASPECT = 2.0
 PAD_X, PAD_Y = 14, 6
@@ -110,13 +111,29 @@ def main():
         if 0 <= y < H and 0 <= x < W:
             grid[y][x] = " "
 
+    # the rays on their own layer, copied before the figure covers them
+    rays = [row[:] for row in grid]
+
     for r, line in enumerate(fig):
         for c, ch in enumerate(line):
             if ch != " ":
                 grid[fy + r][fx + c] = ch
 
-    text = "\n".join("".join(row).rstrip() for row in grid).strip("\n")
+    text_rows = ["".join(row).rstrip() for row in grid]
+    ray_rows = ["".join(row).rstrip() for row in rays]
+
+    # trim blank edges from both together, or the layers drift apart
+    top = 0
+    while top < len(text_rows) and not text_rows[top].strip():
+        top += 1
+    bottom = len(text_rows)
+    while bottom > top and not text_rows[bottom - 1].strip():
+        bottom -= 1
+
+    text = "\n".join(text_rows[top:bottom])
+    halo = "\n".join(ray_rows[top:bottom])
     OUT.write_text(text + "\n")
+    HALO.write_text(halo + "\n")
     lines = text.split("\n")
     print(f"{len(lines)} lines, {max(len(l) for l in lines)} wide\n")
     print(text)
